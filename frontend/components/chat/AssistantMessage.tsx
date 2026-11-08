@@ -1,0 +1,347 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import {
+  Check,
+  Copy,
+  RefreshCw,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
+import { AnalysisTrace } from "./AnalysisTrace";
+import { EvidenceViewer } from "./EvidenceViewer";
+import { ChangeAnalysisBlock } from "./ChangeAnalysisBlock";
+import { MultimodalBlock } from "./MultimodalBlock";
+import { ExecutionDrawer } from "./ExecutionDrawer";
+import { ConfidenceBadge } from "./ConfidenceBadge";
+import type { ExecutionResult, Message } from "@/lib/types";
+import { useAppStore } from "@/lib/store";
+import { useTheme } from "@/lib/theme";
+
+interface AssistantMessageProps {
+  content?: string;
+  result?: ExecutionResult | null;
+  message?: Message;
+  onOpenViewer?: (title: string, image: string, metrics?: { label: string; value: string }[]) => void;
+  onRegenerate?: () => void;
+}
+
+export function AssistantMessage({ content, result, message, onOpenViewer, onRegenerate }: AssistantMessageProps) {
+  const [copied, setCopied] = useState(false);
+  const [liked, setLiked] = useState<boolean | null>(null);
+  const [isRegenerating, setIsRegenerating] = useState(false);
+  const [feedbackToast, setFeedbackToast] = useState<string | null>(null);
+  const setEvidenceModalData = useAppStore((s) => s.setEvidenceModalData);
+  const { resolvedTheme } = useTheme();
+  const isLight = resolvedTheme === "light";
+
+  const answer = message?.content ?? result?.answer ?? content ?? "Analysis completed.";
+  // Only ever populated on the pre-written example conversations shown from
+  // the sidebar (see lib/mock-data.ts) -- a live query never sets this, so
+  // it can't be confused with a real result. (A prior version of ChatArea
+  // also used this to dress up a fabricated fallback as a real answer when
+  // a live query failed; that path is gone -- failures now render as a
+  // plain isError message instead, below.)
+  const trace = message?.analysisTrace;
+  const confidence = result?.confidence;
+  const isError = message?.isError === true;
+  // Only ever set on real completed executions (see confidence.notes in that
+  // case: "Confidence unavailable in demo mode -- not calibrated"). trace is
+  // never present alongside a real result, so this only affects the
+  // plain-text confidence branch below, never ConfidenceBadge.
+  const isDemo = result?.model_provenance?.demo_mode;
+  const changeAnalysis = message?.changeAnalysis;
+  const multimodal = message?.multimodal;
+
+  const showToast = (text: string) => {
+    setFeedbackToast(text);
+    setTimeout(() => {
+      setFeedbackToast((current) => (current === text ? null : current));
+    }, 2400);
+  };
+
+  const handleViewerOpen = (title: string, image: string, metrics?: { label: string; value: string }[]) => {
+    if (onOpenViewer) {
+      onOpenViewer(title, image, metrics);
+    } else {
+      setEvidenceModalData({ title, image, metrics });
+    }
+  };
+
+  function handleCopy() {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard
+        .writeText(answer)
+        .then(() => {
+          setCopied(true);
+          showToast("Copied to clipboard");
+          setTimeout(() => setCopied(false), 2000);
+        })
+        .catch(() => {
+          fallbackCopy();
+        });
+    } else {
+      fallbackCopy();
+    }
+  }
+
+  function fallbackCopy() {
+    try {
+      const el = document.createElement("textarea");
+      el.value = answer;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+      setCopied(true);
+      showToast("Copied to clipboard");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      showToast("Unable to copy");
+    }
+  }
+
+  function handleThumbsUp() {
+    if (liked === true) {
+      setLiked(null);
+      setFeedbackToast(null);
+    } else {
+      setLiked(true);
+      showToast("Feedback submitted: Accurate analysis");
+    }
+  }
+
+  function handleThumbsDown() {
+    if (liked === false) {
+      setLiked(null);
+      setFeedbackToast(null);
+    } else {
+      setLiked(false);
+      showToast("Feedback submitted: Discrepancy flagged");
+    }
+  }
+
+  function handleRegenerateClick() {
+    setIsRegenerating(true);
+    showToast("Regenerating analysis...");
+    if (onRegenerate) {
+      onRegenerate();
+    }
+    setTimeout(() => setIsRegenerating(false), 1200);
+  }
+
+  return (
+    <div className="flex flex-col items-start gap-3 w-full max-w-3xl animate-in fade-in slide-in-from-bottom-2 duration-200 font-sans">
+      {/* Top Metadata Header with Logo & Model & Confidence */}
+      <div className={`flex items-center justify-between w-full text-xs ${isLight ? "text-neutral-600" : "text-neutral-400"}`}>
+        <div className="flex items-center gap-2">
+          <div className={`w-6 h-6 rounded-lg border flex items-center justify-center shrink-0 ${
+            isLight ? "bg-[#fcfbf8] border-black/10 shadow-xs" : "bg-[#141414] border-[#2e2e2e]"
+          }`}>
+            <Image
+              src="/logo/satquertlogo.png"
+              alt="SatQuery AI"
+              width={16}
+              height={16}
+              className="h-4 w-4 rounded-[3px] object-contain shrink-0"
+            />
+          </div>
+          <span className={`font-semibold text-xs tracking-wide ${isLight ? "text-[#18181b]" : "text-white"}`}>SatQuery</span>
+          {trace && (
+            <span className={`text-[10px] font-mono border px-1.5 py-0.5 rounded ${
+              isLight ? "text-neutral-600 border-black/10 bg-black/5" : "text-[#737373] border-[#262626]"
+            }`}>
+              {trace.models.join(" + ")}
+            </span>
+          )}
+          {!trace && result?.model && (
+            <span className={`text-[10px] font-mono border px-1.5 py-0.5 rounded ${
+              isLight ? "text-neutral-600 border-black/10 bg-black/5" : "text-[#737373] border-[#262626]"
+            }`}>
+              {result.model}
+            </span>
+          )}
+          {/* trace is exclusive to the offline canned-narrative fallback (see
+              ChatArea.tsx) and never present on a real completed execution,
+              so this can only ever fire for a genuine result. */}
+          {!trace && isDemo && (
+            <span
+              className={`rounded border px-1.5 py-0.5 font-mono text-[10px] ${
+                isLight ? "border-amber-600/30 bg-amber-500/15 text-amber-800" : "border-amber-500/30 bg-amber-500/10 text-amber-300"
+              }`}
+              title="No trained model ran. This result came from a pixel-color heuristic stand-in, so it is not a reliable analysis."
+            >
+              DEMO — no trained model
+            </span>
+          )}
+          {isError && (
+            <span
+              className={`rounded border px-1.5 py-0.5 font-mono text-[10px] ${
+                isLight ? "border-red-600/30 bg-red-500/15 text-red-800" : "border-red-500/30 bg-red-500/10 text-red-300"
+              }`}
+            >
+              Request failed
+            </span>
+          )}
+        </div>
+
+        {trace && (
+          <ConfidenceBadge
+            confidence={trace.confidence}
+            tier={trace.confidenceTier}
+          />
+        )}
+        {/* Real executions never carry a calibrated model_confidence in demo
+            mode (see confidence.notes from the backend) -- ConfidenceBadge's
+            `?? 0.9` fallback would fabricate a number here, so a real result
+            gets a plain-text label instead, exactly qualified per the
+            backend's own caveat, rather than routed through that component. */}
+        {!trace && confidence && (
+          <span className={`text-[11px] font-mono ${isLight ? "text-neutral-600" : "text-neutral-400"}`}>
+            {confidence.overall_level} confidence
+            {isDemo
+              ? " (uncalibrated)"
+              : confidence.model_confidence != null
+                ? ` (${(confidence.model_confidence * 100).toFixed(0)}%)`
+                : ""}
+          </span>
+        )}
+      </div>
+
+      {/* Main Response Text */}
+      <div
+        className={`w-full text-[15px] sm:text-[15.5px] leading-[1.65] whitespace-pre-wrap font-normal space-y-2 ${
+          isError ? (isLight ? "text-red-700" : "text-red-300/90") : isLight ? "text-[#18181b]" : "text-[#ececec]"
+        }`}
+      >
+        {answer.split("\n\n").map((para, idx) => (
+          <p key={idx}>{para}</p>
+        ))}
+      </div>
+
+      {/* Interactive Bi-Temporal Split Slider (If Present) */}
+      {changeAnalysis && (
+        <div className="w-full mt-2">
+          <ChangeAnalysisBlock data={changeAnalysis} onOpenViewer={handleViewerOpen} />
+        </div>
+      )}
+
+      {/* Cross-Sensor Multimodal Fusion (If Present) */}
+      {multimodal && (
+        <div className="w-full mt-2">
+          <MultimodalBlock data={multimodal} onOpenViewer={handleViewerOpen} />
+        </div>
+      )}
+
+      {/* Evidence Viewer (If Present from message or result) */}
+      {message?.evidence && !changeAnalysis && !multimodal && (
+        <div className="w-full mt-2">
+          <EvidenceViewer evidence={message.evidence} onOpenModal={handleViewerOpen} />
+        </div>
+      )}
+
+      {result && result.evidence && result.evidence.length > 0 && !changeAnalysis && !multimodal && (
+        <div className="w-full mt-2">
+          <EvidenceViewer evidence={result.evidence} executionId={result.execution_id} />
+        </div>
+      )}
+
+      {/* Observable Pipeline Execution Trace */}
+      {trace && (
+        <div className="w-full mt-1">
+          <ExecutionDrawer trace={trace} />
+        </div>
+      )}
+
+      {result && !trace && (
+        <div className="w-full mt-1">
+          <AnalysisTrace result={result} />
+        </div>
+      )}
+
+      {/* ChatGPT-style Action Toolbar */}
+      <div className={`flex items-center gap-2 pt-2 ${isLight ? "text-neutral-600" : "text-neutral-400"}`}>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+            copied
+              ? isLight
+                ? "bg-emerald-500/20 text-emerald-700 border border-emerald-500/40"
+                : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+              : isLight
+                ? "hover:bg-black/5 hover:text-black"
+                : "hover:bg-white/10 hover:text-white"
+          }`}
+          title="Copy response"
+          aria-label="Copy response"
+        >
+          {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+        </button>
+
+        <button
+          type="button"
+          onClick={handleThumbsUp}
+          className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+            liked === true
+              ? isLight
+                ? "bg-emerald-500/20 text-emerald-700 border border-emerald-500/40"
+                : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+              : isLight
+                ? "hover:bg-black/5 hover:text-black"
+                : "hover:bg-white/10 hover:text-white"
+          }`}
+          title="Good response / Accurate analysis"
+          aria-label="Like response"
+        >
+          <ThumbsUp className={`h-4 w-4 ${liked === true ? (isLight ? "fill-emerald-600 text-emerald-600" : "fill-emerald-400") : ""}`} />
+        </button>
+
+        <button
+          type="button"
+          onClick={handleThumbsDown}
+          className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+            liked === false
+              ? isLight
+                ? "bg-rose-500/20 text-rose-700 border border-rose-500/40"
+                : "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+              : isLight
+                ? "hover:bg-black/5 hover:text-black"
+                : "hover:bg-white/10 hover:text-white"
+          }`}
+          title="Bad response / Flag discrepancy"
+          aria-label="Dislike response"
+        >
+          <ThumbsDown className={`h-4 w-4 ${liked === false ? (isLight ? "fill-rose-600 text-rose-600" : "fill-rose-400") : ""}`} />
+        </button>
+
+        <button
+          type="button"
+          onClick={handleRegenerateClick}
+          disabled={isRegenerating}
+          className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+            isLight ? "hover:bg-black/5 hover:text-black" : "hover:bg-white/10 hover:text-white"
+          } ${
+            isRegenerating ? (isLight ? "text-black bg-black/10 pointer-events-none" : "text-white bg-white/10 pointer-events-none") : ""
+          }`}
+          title="Regenerate response"
+          aria-label="Regenerate response"
+        >
+          <RefreshCw className={`h-4 w-4 ${isRegenerating ? (isLight ? "animate-spin text-black" : "animate-spin text-white") : ""}`} />
+        </button>
+
+        {/* Dynamic Feedback Toast */}
+        {feedbackToast && (
+          <span className={`ml-1 text-[11px] font-mono px-2.5 py-1 rounded-md animate-in fade-in zoom-in-95 duration-150 select-none border ${
+            isLight
+              ? "text-neutral-800 bg-[#fcfbf8] border-black/10 shadow-sm"
+              : "text-neutral-300 bg-[#1e1e1e] border-white/10"
+          }`}>
+            {feedbackToast}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}

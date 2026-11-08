@@ -1,0 +1,558 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: #080808;
+    --bg-surface: #0f0f0f;
+    --bg-surface-elevated: #141414;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-medium: rgba(255, 255, 255, 0.16);
+    --text-primary: #f5f5f4;
+    --text-secondary: #a3a3a3;
+    --text-muted: #737373;
+  }
+
+  html {
+    scroll-behavior: auto;
+    color-scheme: dark;
+  }
+
+  /* ── Light theme overrides (Professional Milky Palette) ────────────────────
+     Active STRICTLY under html.light. Dark theme (:root / html.dark) remains
+     100% UNTOUCHED and BIT-PERFECT.
+     AirlockHero.tsx is excluded and remains dark in all themes.
+  ─────────────────────────────────────────────────────────────────────────── */
+  html.light {
+    color-scheme: light;
+    --bg-primary: #f5f2eb;
+    --bg-surface: #ece7de;
+    --bg-surface-elevated: #e4ded3;
+    --bg-card: #fcfbf8;
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --border-medium: rgba(0, 0, 0, 0.14);
+    --text-primary: #18181b;
+    --text-secondary: #52525b;
+    --text-muted: #78716c;
+  }
+
+  html.light body {
+    background-color: #f5f2eb !important;
+    color: #18181b !important;
+  }
+
+  /* Light theme scrollbar */
+  html.light ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.14);
+  }
+
+  html.light ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.24);
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     LANDING PAGE LIGHT THEME (MILKY COLOR SYSTEM)
+     ────────────────────────────────────────────────────────────────────────── */
+
+  /* Tech cards & feature cards */
+  html.light .tech-card {
+    background: #fcfbf8 !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 20px -2px rgba(40, 30, 20, 0.04), inset 0 1px 0 0 rgba(255, 255, 255, 0.8) !important;
+  }
+  html.light .tech-card:hover {
+    border-color: rgba(0, 0, 0, 0.18) !important;
+    box-shadow: 0 12px 32px -6px rgba(40, 30, 20, 0.08) !important;
+  }
+
+  /* Section borders on landing page */
+  html.light section.border-t.border-white\/10 {
+    border-top-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  /* Landing & marketing page surfaces */
+  html.light .bg-\[\#080808\] {
+    background-color: #f5f2eb !important;
+    color: #18181b !important;
+  }
+  html.light .bg-\[\#0a0a0a\] {
+    background-color: #ede8df !important;
+  }
+  html.light .bg-\[\#0e0e0e\] {
+    background-color: #fcfbf8 !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+  html.light .bg-\[\#0c0c0c\]:not(.airlock-section *) {
+    background-color: #fcfbf8 !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+  html.light .bg-\[\#0d0d0d\]:not(.airlock-section *) {
+    background-color: #fcfbf8 !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+  html.light .bg-\[\#121212\] {
+    background-color: #fcfbf8 !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    color: #18181b !important;
+  }
+  html.light .bg-\[\#121212\]::placeholder {
+    color: #78716c !important;
+  }
+  html.light .bg-\[\#070707\] {
+    background-color: #ede8df !important;
+  }
+  html.light .bg-\[\#141414\]:not(.airlock-section *) {
+    background-color: #f5f2eb !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  /* Typography on landing page in light mode */
+  html.light h1.text-white,
+  html.light h2.text-white,
+  html.light h3.text-white,
+  html.light h4.text-white {
+    color: #18181b !important;
+  }
+
+  /* Any solid dark button or pill in light mode preserves white text */
+  html.light .bg-\[\#18181b\],
+  html.light .bg-\[\#18181b\] *,
+  html.light .bg-black,
+  html.light .bg-black *,
+  html.light .bg-neutral-900,
+  html.light .bg-neutral-900 * {
+    color: #ffffff !important;
+  }
+
+  html.light p.text-neutral-300,
+  html.light span.text-neutral-300,
+  html.light div.text-neutral-300 {
+    color: #52525b !important;
+  }
+
+  html.light .text-neutral-400 {
+    color: #78716c !important;
+  }
+
+  html.light .text-neutral-200 {
+    color: #27272a !important;
+  }
+
+  /* Badges & subtle borders */
+  html.light .border-white\/10 {
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+  html.light .border-white\/15 {
+    border-color: rgba(0, 0, 0, 0.12) !important;
+  }
+  html.light .bg-white\/5 {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+  }
+  html.light .bg-white\/\[0\.03\],
+  html.light .bg-white\/\[0\.04\] {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+  }
+
+
+
+  /* FAQ section in light mode */
+  html.light #faq,
+  html.light .luxury-faq-section {
+    background-color: #f5f2eb !important;
+    border-top-color: rgba(0, 0, 0, 0.08) !important;
+    color: #18181b !important;
+  }
+  html.light #faq h2,
+  html.light .luxury-faq-section h2 {
+    color: #18181b !important;
+  }
+  html.light #faq .faq-subtitle,
+  html.light .luxury-faq-section p {
+    color: #57534e !important;
+  }
+  html.light #faq button {
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+  html.light #faq .faq-question {
+    color: #1c1917 !important;
+  }
+  html.light #faq button:hover .faq-question {
+    color: #000000 !important;
+  }
+  html.light #faq .faq-answer {
+    color: #27272a !important;
+  }
+  html.light #faq .faq-arrow {
+    color: #57534e !important;
+  }
+  html.light #faq button:hover .faq-arrow {
+    color: #000000 !important;
+  }
+  html.light #faq .border-t,
+  html.light #faq .border-b {
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  /* Theme toggle in light mode */
+  html.light [aria-label="Theme selector"] {
+    background-color: #ede8df !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+  }
+  html.light [aria-label="Theme selector"] button[aria-checked="true"] {
+    background-color: #ffffff !important;
+    color: #18181b !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+  }
+  html.light [aria-label="Theme selector"] button[aria-checked="true"] svg {
+    color: #18181b !important;
+    stroke: #18181b !important;
+  }
+  html.light [aria-label="Theme selector"] button[aria-checked="false"] {
+    color: #71717a !important;
+  }
+  html.light [aria-label="Theme selector"] button[aria-checked="false"]:hover {
+    color: #18181b !important;
+  }
+
+  /* Footer in light mode */
+  html.light footer.bg-\[\#070707\] {
+    background-color: #ede8df !important;
+    border-top-color: rgba(0, 0, 0, 0.08) !important;
+  }
+  html.light footer .bg-\[\#0c0c0c\] {
+    background-color: #fcfbf8 !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+  html.light footer .bg-gradient-to-b {
+    background: #f5f2eb !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+  html.light footer a {
+    color: #52525b !important;
+  }
+  html.light footer a:hover {
+    color: #18181b !important;
+  }
+  html.light footer h4, html.light footer .font-mono {
+    color: #18181b !important;
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     /app CHAT WORKSPACE LIGHT THEME
+     ────────────────────────────────────────────────────────────────────────── */
+
+  html.light .chat-workspace {
+    background-color: #f5f2eb !important;
+    color: #18181b !important;
+  }
+
+  html.light .chat-workspace .bg-\[\#000000\],
+  html.light .chat-workspace .bg-\[\#080808\] {
+    background-color: #f5f2eb !important;
+  }
+
+  /* Sidebar in light theme */
+  html.light .chat-workspace aside {
+    background-color: #ece7de !important;
+    border-right-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  html.light .chat-workspace aside a {
+    color: #18181b !important;
+  }
+
+  html.light .chat-workspace aside .text-white:not(.user-avatar-badge):not(.keep-white) {
+    color: #18181b !important;
+  }
+
+  html.light .chat-workspace aside .user-avatar-badge,
+  html.light .chat-workspace aside .keep-white {
+    color: #ffffff !important;
+    background-color: #18181b !important;
+  }
+
+  html.light .chat-workspace aside button.bg-\[\#141414\] {
+    background-color: #fcfbf8 !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    color: #18181b !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  html.light .chat-workspace aside button.bg-\[\#141414\]:hover {
+    background-color: #ffffff !important;
+  }
+
+  html.light .chat-workspace aside input {
+    background-color: #fcfbf8 !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    color: #18181b !important;
+  }
+
+  html.light .chat-workspace aside input::placeholder {
+    color: #78716c !important;
+  }
+
+  html.light .chat-workspace aside .text-neutral-400,
+  html.light .chat-workspace aside .text-neutral-500 {
+    color: #78716c !important;
+  }
+
+  html.light .chat-workspace aside .text-neutral-300 {
+    color: #44403c !important;
+  }
+
+  html.light .chat-workspace aside .hover\:bg-white\/5:hover,
+  html.light .chat-workspace aside .hover\:bg-white\/10:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+  }
+
+  html.light .chat-workspace aside .bg-white\/10,
+  html.light .chat-workspace aside .bg-white\/5 {
+    background-color: rgba(0, 0, 0, 0.06) !important;
+  }
+
+  html.light .chat-workspace aside .border-t.border-white\/10 {
+    border-top-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  /* Chat Header in light theme */
+  html.light .chat-workspace header {
+    background-color: rgba(245, 242, 235, 0.88) !important;
+    border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+    backdrop-filter: blur(12px) !important;
+  }
+
+  html.light .chat-workspace header .text-white,
+  html.light .chat-workspace header h1,
+  html.light .chat-workspace header span {
+    color: #18181b !important;
+  }
+
+  html.light .chat-workspace header button {
+    color: #52525b !important;
+  }
+
+  html.light .chat-workspace header button:hover {
+    color: #18181b !important;
+    background-color: rgba(0, 0, 0, 0.05) !important;
+  }
+
+  html.light .chat-workspace header .border-\[\#1f1f1f\] {
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  /* Chat Area & Composer in light theme */
+  html.light .chat-workspace .bg-\[\#141414\] {
+    background-color: #fcfbf8 !important;
+  }
+
+  html.light .chat-workspace .border-\[\#2e2e2e\] {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+  }
+
+  html.light .chat-workspace .rounded-\[32px\] {
+    background-color: #fcfbf8 !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 10px 36px -4px rgba(40, 30, 20, 0.08) !important;
+  }
+
+  html.light .chat-workspace .rounded-\[32px\] textarea {
+    color: #18181b !important;
+  }
+
+  html.light .chat-workspace .rounded-\[32px\] textarea::placeholder {
+    color: #78716c !important;
+  }
+
+  html.light .chat-workspace .rounded-\[32px\] .bg-\[\#171717\] {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    color: #52525b !important;
+  }
+
+  html.light .chat-workspace .rounded-\[32px\] .bg-\[\#171717\]:hover {
+    background-color: rgba(0, 0, 0, 0.08) !important;
+    color: #18181b !important;
+  }
+
+  /* Empty state cards in light theme */
+  html.light .chat-workspace .empty-state-card,
+  html.light .chat-workspace .border-white\/10.bg-white\/\[0\.02\] {
+    background-color: #fcfbf8 !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 16px -2px rgba(40, 30, 20, 0.04) !important;
+  }
+  html.light .chat-workspace .empty-state-card:hover,
+  html.light .chat-workspace .border-white\/10.bg-white\/\[0\.02\]:hover {
+    background-color: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.16) !important;
+  }
+
+  /* User & Assistant Messages */
+  html.light .chat-workspace .user-message-bubble,
+  html.light .chat-workspace .bg-\[\#1a1a1a\],
+  html.light .chat-workspace .bg-\[\#1c1c1c\] {
+    background-color: #ece7de !important;
+    color: #18181b !important;
+  }
+
+  html.light .chat-workspace .assistant-message-content {
+    color: #18181b !important;
+  }
+
+  html.light .chat-workspace .bg-\[\#0d0d0d\] {
+    background-color: #fcfbf8 !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  html.light .chat-workspace .bg-\[\#0f0f0f\] {
+    background-color: #ece7de !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  /* Modals in light mode */
+  html.light .modal-backdrop,
+  html.light .bg-black\/60 {
+    background-color: rgba(24, 24, 27, 0.4) !important;
+  }
+
+  html.light .bg-\[\#0e0e0e\].border-white\/15,
+  html.light .bg-\[\#121212\].border-white\/10,
+  html.light .bg-\[\#0a0a0a\].border-white\/10 {
+    background-color: #fcfbf8 !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    color: #18181b !important;
+    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+/* Lenis smooth scrolling rules */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Minimal technical scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* Strictly hide and remove all scrollbars / sliders in the chat section */
+.chat-workspace,
+.chat-workspace *,
+.no-scrollbar,
+.no-scrollbar *,
+.chat-scroll-container,
+.chat-scroll-container * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.chat-workspace::-webkit-scrollbar,
+.chat-workspace *::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar,
+.no-scrollbar *::-webkit-scrollbar,
+.chat-scroll-container::-webkit-scrollbar,
+.chat-scroll-container *::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  max-width: 0px !important;
+  max-height: 0px !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.chat-workspace::-webkit-scrollbar-thumb,
+.chat-workspace *::-webkit-scrollbar-thumb,
+.no-scrollbar::-webkit-scrollbar-thumb,
+.no-scrollbar *::-webkit-scrollbar-thumb,
+.chat-scroll-container::-webkit-scrollbar-thumb,
+.chat-scroll-container *::-webkit-scrollbar-thumb {
+  display: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+.chat-workspace::-webkit-scrollbar-track,
+.chat-workspace *::-webkit-scrollbar-track,
+.no-scrollbar::-webkit-scrollbar-track,
+.no-scrollbar *::-webkit-scrollbar-track,
+.chat-scroll-container::-webkit-scrollbar-track,
+.chat-scroll-container *::-webkit-scrollbar-track {
+  display: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Technical background patterns */
+.bg-tech-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.bg-tech-dots {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Subtle border glow and card styling inspired by caven.one */
+.tech-card {
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04), 0 8px 24px -6px rgba(0, 0, 0, 0.6);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tech-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 16px 36px -8px rgba(0, 0, 0, 0.8);
+}
