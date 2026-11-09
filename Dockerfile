@@ -1,0 +1,29 @@
+FROM python:3.11-slim
+
+# Install system dependencies for GDAL, rasterio, shapely, geopandas
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gdal-bin libgdal-dev libgeos-dev libproj-dev \
+    build-essential curl \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
+ENV C_INCLUDE_PATH=/usr/include/gdal
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Copy backend requirements and install
+COPY backend/pyproject.toml ./backend/
+RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -e ./backend
+
+# Copy backend code, demo data, and scripts
+COPY backend/ ./backend/
+COPY data/ ./data/
+COPY scripts/ ./scripts/
+
+WORKDIR /app/backend
+
+ENV PORT=8000
+EXPOSE 8000
+
+CMD ["sh", "-c", "alembic upgrade head && python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
